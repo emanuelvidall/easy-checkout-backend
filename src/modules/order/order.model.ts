@@ -1,13 +1,8 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { $Enums } from '@prisma/client';
 import { Product } from '../product/product.model';
 
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  CANCELED = 'CANCELED',
-}
-
-registerEnumType(OrderStatus, {
+registerEnumType($Enums.OrderStatus, {
   name: 'OrderStatus',
 });
 
@@ -19,8 +14,8 @@ export class Order {
   @Field()
   productId: string;
 
-  @Field(() => Product)
-  product: Product;
+  @Field(() => Product, { nullable: true })
+  product?: Product;
 
   @Field()
   customerName: string;
@@ -34,8 +29,8 @@ export class Order {
   @Field()
   customerEmail: string;
 
-  @Field(() => OrderStatus)
-  status: OrderStatus;
+  @Field(() => $Enums.OrderStatus)
+  status: $Enums.OrderStatus;
 
   @Field()
   paymentMethod: string;

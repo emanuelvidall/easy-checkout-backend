@@ -37,7 +37,7 @@ model Order{
   customerPhone String
   customerCPF String
   customerEmail String
-  status     OrderStatus
+  status     OrderStatus @default(PENDING)
   paymentMethod String
   createdAt  DateTime @default(now())
   @@map("orders")

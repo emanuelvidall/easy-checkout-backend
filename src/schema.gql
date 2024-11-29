@@ -5,7 +5,7 @@
 type Order {
   id: String!
   productId: String!
-  product: Product!
+  product: Product
   customerName: String!
   customerPhone: String!
   customerCPF: String!
@@ -16,9 +16,8 @@ type Order {
 }
 
 enum OrderStatus {
+  APPROVED
   PENDING
-  COMPLETED
-  CANCELED
 }
 
 """
