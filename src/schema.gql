@@ -1,0 +1,52 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Order {
+  id: String!
+  productId: String!
+  product: Product!
+  customerName: String!
+  customerPhone: String!
+  customerCPF: String!
+  customerEmail: String!
+  status: OrderStatus!
+  paymentMethod: String!
+  createdAt: DateTime!
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: String!
+  name: String!
+  description: String!
+  imageURL: String!
+  price: Float!
+  createdAt: DateTime!
+  orders: [Order!]
+}
+
+type Query {
+  getProducts: [Product!]!
+}
+
+type Mutation {
+  createProduct(createProductInput: CreateProductInput!): Product!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  imageURL: String!
+}

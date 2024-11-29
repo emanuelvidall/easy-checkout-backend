@@ -19,7 +19,7 @@ export class Order {
   @Field()
   productId: string;
 
-  @Field()
+  @Field(() => Product)
   product: Product;
 
   @Field()
