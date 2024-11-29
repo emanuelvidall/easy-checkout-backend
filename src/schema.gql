@@ -38,10 +38,13 @@ type Product {
 
 type Query {
   getProducts: [Product!]!
+  getProductById(id: String!): Product!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(id: String!, updateProductInput: CreateProductInput!): Product!
+  deleteProduct(id: String!): Product!
 }
 
 input CreateProductInput {
