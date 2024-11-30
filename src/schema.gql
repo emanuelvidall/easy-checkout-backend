@@ -45,7 +45,7 @@ type Query {
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(id: String!, updateProductInput: CreateProductInput!): Product!
-  deleteProduct(id: String!): Product!
+  deleteProduct(productId: String!): Boolean!
   createOrder(createOrderInput: CreateOrderInput!): Order!
   approveOrder(id: String!): Order!
 }

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { FileUploadService } from '../file-upload/file-upload.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly fileUploadService: FileUploadService,
+  ) {}
 
   async getAllProducts(): Promise<Product[]> {
     return this.prisma.product.findMany();
@@ -32,7 +36,23 @@ export class ProductService {
     });
   }
 
-  async deleteProduct(id: string): Promise<Product> {
-    return this.prisma.product.delete({ where: { id } });
+  async deleteProduct(productId: string): Promise<void> {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const fileKey = product.imageURL.split('/').pop();
+
+    await this.prisma.product.delete({
+      where: { id: productId },
+    });
+
+    if (fileKey) {
+      await this.fileUploadService.deleteFileFromS3(fileKey);
+    }
   }
 }

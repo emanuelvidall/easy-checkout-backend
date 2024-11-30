@@ -8,6 +8,7 @@ import { join } from 'path';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
+import { FileUploadModule } from './modules/file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OrderModule } from './modules/order/order.module';
     PrismaModule,
     ProductModule,
     OrderModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

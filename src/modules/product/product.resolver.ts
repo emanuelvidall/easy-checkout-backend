@@ -94,9 +94,10 @@ export class ProductResolver {
   //   }
   // }
 
-  @Mutation(() => Product)
-  async deleteProduct(@Args('id') id: string): Promise<Product> {
-    return this.productService.deleteProduct(id);
+  @Mutation(() => Boolean, { name: 'deleteProduct' })
+  async deleteProduct(@Args('productId') productId: string): Promise<boolean> {
+    await this.productService.deleteProduct(productId);
+    return true;
   }
 
   //Example of mutation to delete product:
