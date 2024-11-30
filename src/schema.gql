@@ -38,12 +38,16 @@ type Product {
 type Query {
   getProducts: [Product!]!
   getProductById(id: String!): Product!
+  getOrders: [Order!]!
+  getOrderById(id: String!): Order!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(id: String!, updateProductInput: CreateProductInput!): Product!
   deleteProduct(id: String!): Product!
+  createOrder(data: CreateOrderInput!): Order!
+  approveOrder(id: String!): Order!
 }
 
 input CreateProductInput {
@@ -51,4 +55,14 @@ input CreateProductInput {
   description: String!
   price: Float!
   imageURL: String!
+}
+
+input CreateOrderInput {
+  customerName: String!
+  customerPhone: String!
+  customerCPF: String!
+  customerEmail: String!
+  productId: String!
+  paymentMethod: String!
+  status: OrderStatus!
 }

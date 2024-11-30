@@ -12,13 +12,30 @@ export class OrderResolver {
     return this.orderService.getAllOrders();
   }
 
+  //Example query to get all orders:
+  // query {
+  // getOrders {
+  //   id
+  //   product {
+  //     id
+  //     name
+  //     description
+  //     price
+  //     imageURL
+  //     createdAt
+  //   }
+  //   quantity
+  //   status
+  //   createdAt
+  // }
+
   @Query(() => Order, { name: 'getOrderById' })
   async getOrderById(@Args('id') id: string): Promise<Order> {
     return this.orderService.getOrderById(id);
   }
 
   @Mutation(() => Order, { name: 'createOrder' })
-  async createOrder(@Args('data') data: OrderCreateInput): Promise<Order> {
+  async createOrder(@Args('data') data: CreateOrderInput): Promise<Order> {
     return this.orderService.createOrder(data);
   }
 

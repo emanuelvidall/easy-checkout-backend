@@ -1,6 +1,7 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { Order, Prisma } from '@prisma/client';
+import { Order } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { CreateOrderInput } from './create-order.input';
 
 @Injectable()
 export class OrderService {
@@ -17,9 +18,15 @@ export class OrderService {
     });
   }
 
-  async createOrder(data: Prisma.OrderCreateInput): Promise<Order> {
+  async createOrder(data: CreateOrderInput): Promise<Order> {
+    const { productId, ...rest } = data;
+
     return this.prisma.order.create({
-      data: { product: { connect: { id: data.productId } } },
+      data: {
+        ...rest,
+        product: { connect: { id: productId } },
+      },
+      include: { product: true },
     });
   }
 
