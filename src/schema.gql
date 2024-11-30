@@ -46,7 +46,7 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(id: String!, updateProductInput: CreateProductInput!): Product!
   deleteProduct(id: String!): Product!
-  createOrder(data: CreateOrderInput!): Order!
+  createOrder(createOrderInput: CreateOrderInput!): Order!
   approveOrder(id: String!): Order!
 }
 

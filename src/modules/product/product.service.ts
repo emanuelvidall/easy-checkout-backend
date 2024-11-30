@@ -25,6 +25,13 @@ export class ProductService {
     return this.prisma.product.update({ where: { id }, data });
   }
 
+  async updateProductImage(productId: string, imageURL: string): Promise<void> {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: { imageURL: imageURL },
+    });
+  }
+
   async deleteProduct(id: string): Promise<Product> {
     return this.prisma.product.delete({ where: { id } });
   }
