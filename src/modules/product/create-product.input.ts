@@ -15,7 +15,7 @@ export class CreateProductInput {
   @IsPositive()
   price: number;
 
-  @Field()
+  @Field({ nullable: true })
   @IsUrl()
   imageURL: string;
 }

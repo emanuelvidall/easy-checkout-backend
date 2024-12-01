@@ -26,7 +26,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Product {
-  id: String!
+  id: ID!
   name: String!
   description: String!
   imageURL: String!
@@ -45,7 +45,7 @@ type Query {
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(id: String!, updateProductInput: CreateProductInput!): Product!
-  deleteProduct(productId: String!): Boolean!
+  deleteProduct(productId: ID!): Boolean!
   createOrder(createOrderInput: CreateOrderInput!): Order!
   approveOrder(id: String!): Order!
 }
@@ -54,7 +54,7 @@ input CreateProductInput {
   name: String!
   description: String!
   price: Float!
-  imageURL: String!
+  imageURL: String
 }
 
 input CreateOrderInput {

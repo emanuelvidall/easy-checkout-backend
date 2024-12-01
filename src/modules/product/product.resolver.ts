@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { Product } from './product.model';
 import { CreateProductInput } from './create-product.input';
@@ -95,7 +95,9 @@ export class ProductResolver {
   // }
 
   @Mutation(() => Boolean, { name: 'deleteProduct' })
-  async deleteProduct(@Args('productId') productId: string): Promise<boolean> {
+  async deleteProduct(
+    @Args('productId', { type: () => ID }) productId: string,
+  ): Promise<boolean> {
     await this.productService.deleteProduct(productId);
     return true;
   }
