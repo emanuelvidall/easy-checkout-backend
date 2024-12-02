@@ -55,6 +55,7 @@ export class OrderResolver {
   async createOrder(
     @Args('createOrderInput') createOrderInput: CreateOrderInput,
   ): Promise<Order> {
+    console.log('Received createOrderInput:', createOrderInput);
     return this.orderService.createOrder(createOrderInput);
   }
 
