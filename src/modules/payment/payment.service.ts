@@ -48,6 +48,7 @@ export class PaymentService {
             federal_unit: 'SP',
           },
         },
+        notification_url: `${process.env.BASE_URL}/payment/webhook`,
       };
 
       const paymentResponse = await this.api.post('/payments', paymentData, {
