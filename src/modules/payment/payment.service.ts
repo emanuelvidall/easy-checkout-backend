@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { OrderService } from '../order/order.service';
+import { OrderRepository } from '../order/order.repository';
 
 @Injectable()
 export class PaymentService {
+  constructor(
+    private readonly orderRepository: OrderRepository,
+    private readonly orderService: OrderService,
+  ) {}
   private readonly api = axios.create({
     baseURL: process.env.MERCADO_PAGO_BASE_URL,
     headers: {
@@ -63,5 +69,43 @@ export class PaymentService {
       );
       throw new Error('Failed to create payment');
     }
+  }
+
+  async checkPaymentStatus(
+    paymentId: string,
+  ): Promise<{ status: string; details: any }> {
+    try {
+      const paymentResponse = await this.api.get(`/payments/${paymentId}`);
+      const status = paymentResponse.data.status;
+
+      return {
+        status,
+        details: paymentResponse.data,
+      };
+    } catch (error) {
+      console.error(
+        'Error checking payment status:',
+        error.response?.data || error.message,
+      );
+      throw new Error('Failed to check payment status');
+    }
+  }
+
+  async handlePaymentStatusUpdate(payload: any): Promise<void> {
+    const { status, metadata } = payload;
+
+    const orderId = metadata?.orderId;
+    if (!orderId) {
+      throw new Error('Order ID not found in webhook payload');
+    }
+
+    const order = await this.orderRepository.findOne(orderId);
+    if (!order) {
+      throw new Error(`Order not found for ID: ${orderId}`);
+    }
+
+    const newStatus = status === 'approved' ? 'APPROVED' : 'PENDING';
+
+    await this.orderRepository.update(orderId, { status: newStatus });
   }
 }
