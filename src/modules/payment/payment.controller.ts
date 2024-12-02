@@ -23,11 +23,17 @@ export class PaymentController {
       cpf: string;
       email: string;
       telefone: string;
+      price: number;
     },
   ) {
-    const { name, cpf, email } = body;
+    const { name, cpf, email, price } = body;
 
-    const payment = await this.paymentService.createPayment(name, cpf, email);
+    const payment = await this.paymentService.createPayment(
+      name,
+      cpf,
+      email,
+      price,
+    );
 
     return {
       message: 'Pagamento criado com sucesso',

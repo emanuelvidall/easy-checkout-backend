@@ -21,13 +21,14 @@ export class PaymentService {
     name: string,
     cpf: string,
     email: string,
+    price: number,
   ): Promise<{ id: string; qrCode: string; qrCodeBase64: string }> {
     try {
       const [firstName, ...lastNameParts] = name.split(' ');
       const lastName = lastNameParts.join(' ');
 
       const paymentData = {
-        transaction_amount: 100.0,
+        transaction_amount: price,
         description: 'Product Purchase',
         payment_method_id: 'pix',
         payer: {
