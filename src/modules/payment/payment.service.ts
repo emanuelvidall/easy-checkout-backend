@@ -3,6 +3,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { OrderService } from '../order/order.service';
 import { OrderRepository } from '../order/order.repository';
+import { CreateOrderInput } from '../order/create-order.input';
 
 @Injectable()
 export class PaymentService {
@@ -21,11 +22,25 @@ export class PaymentService {
     name: string,
     cpf: string,
     email: string,
+    telefone: string,
     price: number,
+    productId: string,
   ): Promise<{ id: string; qrCode: string; qrCodeBase64: string }> {
     try {
       const [firstName, ...lastNameParts] = name.split(' ');
       const lastName = lastNameParts.join(' ');
+
+      // Create the order in the database first
+      const createOrderInput: CreateOrderInput = {
+        customerName: name,
+        customerCPF: cpf,
+        customerEmail: email,
+        customerPhone: telefone,
+        productId: productId,
+        paymentMethod: 'PIX',
+      };
+
+      const order = await this.orderService.createOrder(createOrderInput);
 
       const paymentData = {
         transaction_amount: price,
@@ -49,6 +64,9 @@ export class PaymentService {
           },
         },
         notification_url: `${process.env.BASE_URL}/payment/webhook`,
+        metadata: {
+          orderId: order.id,
+        },
       };
 
       const paymentResponse = await this.api.post('/payments', paymentData, {
@@ -94,11 +112,19 @@ export class PaymentService {
   }
 
   async handlePaymentStatusUpdate(payload: any): Promise<void> {
-    const { status, metadata } = payload;
+    const { data } = payload;
 
-    const orderId = metadata?.orderId;
+    const paymentId = data?.id;
+    if (!paymentId) {
+      throw new Error('Payment ID not found in webhook payload');
+    }
+
+    const paymentResponse = await this.api.get(`/payments/${paymentId}`);
+    const paymentData = paymentResponse.data;
+
+    const orderId = paymentData.metadata?.orderId;
     if (!orderId) {
-      throw new Error('Order ID not found in webhook payload');
+      throw new Error('Order ID not found in payment metadata');
     }
 
     const order = await this.orderRepository.findOne(orderId);
@@ -106,7 +132,8 @@ export class PaymentService {
       throw new Error(`Order not found for ID: ${orderId}`);
     }
 
-    const newStatus = status === 'approved' ? 'APPROVED' : 'PENDING';
+    const newStatus =
+      paymentData.status === 'approved' ? 'APPROVED' : 'PENDING';
 
     await this.orderRepository.update(orderId, { status: newStatus });
   }

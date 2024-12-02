@@ -24,15 +24,18 @@ export class PaymentController {
       email: string;
       telefone: string;
       price: number;
+      productId: string;
     },
   ) {
-    const { name, cpf, email, price } = body;
+    const { name, cpf, email, telefone, price, productId } = body;
 
     const payment = await this.paymentService.createPayment(
       name,
       cpf,
       email,
+      telefone,
       price,
+      productId,
     );
 
     return {
