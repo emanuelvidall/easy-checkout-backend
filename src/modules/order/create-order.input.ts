@@ -35,6 +35,5 @@ export class CreateOrderInput {
   paymentMethod: string;
 
   @Field(() => OrderStatus)
-  @IsNotEmpty()
   status: OrderStatus;
 }

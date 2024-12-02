@@ -9,6 +9,7 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
     ProductModule,
     OrderModule,
     FileUploadModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
