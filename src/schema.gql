@@ -71,5 +71,4 @@ input CreateOrderInput {
   customerEmail: String!
   productId: String!
   paymentMethod: String!
-  status: OrderStatus!
 }

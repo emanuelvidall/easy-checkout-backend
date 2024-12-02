@@ -21,9 +21,6 @@ export class OrderService {
   async createOrder(data: CreateOrderInput): Promise<Order> {
     const { productId, ...rest } = data;
 
-    console.log('Connecting to product ID:', productId);
-    console.log('Order data:', rest);
-
     return this.prisma.order.create({
       data: {
         ...rest,
