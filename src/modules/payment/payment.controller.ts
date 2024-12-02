@@ -22,18 +22,27 @@ export class PaymentController {
       name: string;
       cpf: string;
       email: string;
-      telefone: string;
+      phone: string;
       price: number;
       productId: string;
     },
   ) {
-    const { name, cpf, email, telefone, price, productId } = body;
+    const { name, cpf, email, phone, price, productId } = body;
+
+    console.log('Received in Controller:', {
+      name,
+      cpf,
+      email,
+      phone,
+      price,
+      productId,
+    });
 
     const payment = await this.paymentService.createPayment(
       name,
       cpf,
       email,
-      telefone,
+      phone,
       price,
       productId,
     );

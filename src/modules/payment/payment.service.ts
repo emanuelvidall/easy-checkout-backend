@@ -22,20 +22,32 @@ export class PaymentService {
     name: string,
     cpf: string,
     email: string,
-    telefone: string,
+    phone: string,
     price: number,
     productId: string,
   ): Promise<{ id: string; qrCode: string; qrCodeBase64: string }> {
     try {
-      const [firstName, ...lastNameParts] = name.split(' ');
-      const lastName = lastNameParts.join(' ');
+      if (!productId) {
+        throw new Error('Product ID is required');
+      }
+      if (!phone) {
+        throw new Error('Phone (customerPhone) is required');
+      }
 
-      // Create the order in the database first
+      console.log('Received in Service:', {
+        name,
+        cpf,
+        email,
+        phone,
+        price,
+        productId,
+      });
+
       const createOrderInput: CreateOrderInput = {
         customerName: name,
         customerCPF: cpf,
         customerEmail: email,
-        customerPhone: telefone,
+        customerPhone: phone,
         productId: productId,
         paymentMethod: 'PIX',
       };
@@ -48,8 +60,8 @@ export class PaymentService {
         payment_method_id: 'pix',
         payer: {
           email,
-          first_name: firstName,
-          last_name: lastName,
+          first_name: name,
+          last_name: '',
           identification: {
             type: 'CPF',
             number: cpf.replace(/\D/g, ''),
