@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { OrderService } from '../order/order.service';
 import { OrderRepository } from '../order/order.repository';
 import { CreateOrderInput } from '../order/create-order.input';
+import { UpdateOrderInput } from '../order/update-order.input';
 
 @Injectable()
 export class PaymentService {
@@ -76,9 +77,6 @@ export class PaymentService {
           },
         },
         notification_url: `${process.env.BASE_URL}/payment/webhook`,
-        metadata: {
-          orderId: order.id,
-        },
       };
 
       const paymentResponse = await this.api.post('/payments', paymentData, {
@@ -87,10 +85,16 @@ export class PaymentService {
         },
       });
 
-      const { id, point_of_interaction } = paymentResponse.data;
+      const { id: paymentId, point_of_interaction } = paymentResponse.data;
+
+      const updateOrderInput: UpdateOrderInput = {
+        paymentId: paymentId,
+      };
+
+      await this.orderService.updateOrder(order.id, updateOrderInput);
 
       return {
-        id,
+        id: paymentId,
         qrCode: point_of_interaction.transaction_data.qr_code,
         qrCodeBase64: point_of_interaction.transaction_data.qr_code_base64,
       };

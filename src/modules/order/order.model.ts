@@ -20,11 +20,11 @@ export class Order {
   @Field()
   customerName: string;
 
-  @Field()
-  paymentId: string;
+  @Field({ nullable: true })
+  paymentId?: string;
 
-  @Field()
-  paymentStatus: string;
+  @Field({ nullable: true })
+  paymentStatus?: string;
 
   @Field()
   customerPhone: string;

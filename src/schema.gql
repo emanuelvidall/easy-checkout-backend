@@ -7,8 +7,8 @@ type Order {
   productId: String!
   product: Product
   customerName: String!
-  paymentId: String!
-  paymentStatus: String!
+  paymentId: String
+  paymentStatus: String
   customerPhone: String!
   customerCPF: String!
   customerEmail: String!

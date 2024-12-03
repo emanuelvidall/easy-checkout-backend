@@ -24,8 +24,8 @@ export class CreateOrderInput {
   customerEmail: string;
 
   @Field()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   productId: string;
 
   @Field()
