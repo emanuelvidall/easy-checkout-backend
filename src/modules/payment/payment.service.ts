@@ -149,4 +149,14 @@ export class PaymentService {
 
     await this.orderRepository.update(orderId, { status: newStatus });
   }
+
+  async updateOrderStatusToApproved(orderId: string): Promise<void> {
+    try {
+      await this.orderService.updateOrderStatus(orderId, 'APPROVED');
+      console.log(`Order ${orderId} status updated to APPROVED`);
+    } catch (error) {
+      console.error('Error updating order status:', error.message);
+      throw error;
+    }
+  }
 }

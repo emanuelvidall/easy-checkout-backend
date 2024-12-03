@@ -57,8 +57,14 @@ export class PaymentController {
   async handleWebhook(@Req() req: Request, @Res() res: Response) {
     try {
       const payload = req.body;
+      const orderId = payload?.metadata?.orderId;
 
-      await this.paymentService.handlePaymentStatusUpdate(payload);
+      if (!orderId) {
+        console.error('Order ID not found in webhook payload');
+        return res.status(400).send('Order ID not found');
+      }
+
+      await this.paymentService.updateOrderStatusToApproved(orderId);
 
       res.status(HttpStatus.OK).send('Webhook received');
     } catch (error) {

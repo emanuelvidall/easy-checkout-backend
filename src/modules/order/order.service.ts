@@ -36,4 +36,14 @@ export class OrderService {
       data: { status: 'APPROVED' },
     });
   }
+
+  async updateOrderStatus(
+    orderId: string,
+    status: 'APPROVED' | 'PENDING',
+  ): Promise<void> {
+    await this.prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+    });
+  }
 }
