@@ -2,6 +2,9 @@ import { PrismaService } from 'prisma/prisma.service';
 import { Order } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { CreateOrderInput } from './create-order.input';
+import { PaymentStatus } from '../payment/payment-status.enum';
+import { OrderStatus } from './order-status.enum';
+import { UpdateOrderInput } from './update-order.input';
 
 @Injectable()
 export class OrderService {
@@ -29,21 +32,26 @@ export class OrderService {
       include: { product: true },
     });
   }
+  async mapPaymentStatusToOrderStatus(
+    paymentStatus: PaymentStatus,
+  ): Promise<OrderStatus> {
+    switch (paymentStatus) {
+      case PaymentStatus.APPROVED:
+        return OrderStatus.APPROVED;
+      case PaymentStatus.PENDING:
+      default:
+        return OrderStatus.PENDING;
+    }
+  }
 
-  async approveOrder(id: string): Promise<Order> {
+  async updateOrder(orderId: string, updateOrderInput: UpdateOrderInput) {
     return this.prisma.order.update({
-      where: { id },
-      data: { status: 'APPROVED' },
+      where: { id: orderId },
+      data: updateOrderInput,
     });
   }
 
-  async updateOrderStatus(
-    orderId: string,
-    status: 'APPROVED' | 'PENDING',
-  ): Promise<void> {
-    await this.prisma.order.update({
-      where: { id: orderId },
-      data: { status },
-    });
+  async findByPaymentId(paymentId: string) {
+    return this.prisma.order.findUnique({ where: { paymentId } });
   }
 }

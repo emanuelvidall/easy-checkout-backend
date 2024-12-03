@@ -10,10 +10,16 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
+import { PaymentStatus } from './payment-status.enum';
+import { UpdateOrderInput } from '../order/update-order.input';
+import { OrderService } from '../order/order.service';
 
 @Controller('payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly orderService: OrderService,
+  ) {}
 
   @Post('create')
   async createPayment(
@@ -54,23 +60,32 @@ export class PaymentController {
   }
 
   @Post('webhook')
-  async handleWebhook(@Req() req: Request, @Res() res: Response) {
-    try {
-      const payload = req.body;
-      const orderId = payload?.metadata?.orderId;
+  async handlePaymentWebhook(@Req() req: Request, @Res() res: Response) {
+    const event = req.body;
 
-      if (!orderId) {
-        console.error('Order ID not found in webhook payload');
-        return res.status(400).send('Order ID not found');
-      }
+    const { paymentId, status } = event;
 
-      await this.paymentService.updateOrderStatusToApproved(orderId);
-
-      res.status(HttpStatus.OK).send('Webhook received');
-    } catch (error) {
-      console.error('Error handling webhook:', error.message);
-      res.status(500).send('Failed to process webhook');
+    if (![PaymentStatus.PENDING, PaymentStatus.APPROVED].includes(status)) {
+      return res.status(HttpStatus.BAD_REQUEST).send('Invalid payment status');
     }
+
+    const order = await this.orderService.findByPaymentId(paymentId);
+
+    if (!order) {
+      return res.status(HttpStatus.NOT_FOUND).send('Order not found');
+    }
+
+    const orderStatus =
+      await this.orderService.mapPaymentStatusToOrderStatus(status);
+
+    const updateOrderInput: UpdateOrderInput = {
+      paymentStatus: status,
+      orderStatus: orderStatus,
+    };
+
+    await this.orderService.updateOrder(order.id, updateOrderInput);
+
+    res.status(HttpStatus.OK).send('Payment status updated');
   }
 
   @Get('status')

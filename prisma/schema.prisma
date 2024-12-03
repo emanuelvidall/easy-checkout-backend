@@ -18,6 +18,11 @@ enum OrderStatus{
   PENDING
 }
 
+enum PaymentStatus{
+  APPROVED
+  PENDING
+}
+
 model Product{
   id         String   @id @default(uuid())
   name        String
@@ -33,6 +38,8 @@ model Order{
   id         String   @id @default(uuid())
   productId  String
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  paymentId      String? @unique
+  paymentStatus  String?
   customerName String
   customerPhone String
   customerCPF String

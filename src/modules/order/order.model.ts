@@ -21,6 +21,12 @@ export class Order {
   customerName: string;
 
   @Field()
+  paymentId: string;
+
+  @Field()
+  paymentStatus: string;
+
+  @Field()
   customerPhone: string;
 
   @Field()

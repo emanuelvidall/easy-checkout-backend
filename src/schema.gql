@@ -7,6 +7,8 @@ type Order {
   productId: String!
   product: Product
   customerName: String!
+  paymentId: String!
+  paymentStatus: String!
   customerPhone: String!
   customerCPF: String!
   customerEmail: String!
@@ -47,7 +49,6 @@ type Mutation {
   updateProduct(id: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: ID!): Boolean!
   createOrder(createOrderInput: CreateOrderInput!): Order!
-  approveOrder(id: String!): Order!
 }
 
 input CreateProductInput {
