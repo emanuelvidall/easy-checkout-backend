@@ -14,6 +14,6 @@ export class UpdateOrderInput {
   paymentStatus?: PaymentStatus;
 
   @IsOptional()
-  @IsEnum(OrderStatus)
-  orderStatus?: OrderStatus;
+  @IsString()
+  status?: OrderStatus;
 }

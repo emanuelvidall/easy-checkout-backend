@@ -43,16 +43,6 @@ export class PaymentController {
       console.log('Payment ID:', paymentId);
       console.log('Payment Status:', status);
 
-      if (
-        ![PaymentStatus.PENDING, PaymentStatus.APPROVED].includes(
-          status as PaymentStatus,
-        )
-      ) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .send('Invalid payment status');
-      }
-
       const order = await this.orderService.findByPaymentId(paymentId);
 
       if (!order) {
@@ -67,7 +57,7 @@ export class PaymentController {
 
       const updateOrderInput: UpdateOrderInput = {
         paymentStatus: paymentStatus,
-        orderStatus: orderStatus,
+        status: orderStatus,
       };
 
       await this.orderService.updateOrder(order.id, updateOrderInput);
