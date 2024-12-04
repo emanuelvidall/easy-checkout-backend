@@ -21,6 +21,66 @@ export class PaymentController {
     private readonly orderService: OrderService,
   ) {}
 
+  @Post('webhook')
+  async handlePaymentWebhook(@Req() req: Request, @Res() res: Response) {
+    const event = req.body;
+    console.log('Received webhook event:', JSON.stringify(event, null, 2));
+
+    let paymentId: string;
+
+    if (event.type === 'payment' && event.data && event.data.id) {
+      paymentId = event.data.id.toString();
+    } else {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send('Payment ID is missing in webhook payload');
+    }
+
+    try {
+      const { status } =
+        await this.paymentService.checkPaymentStatus(paymentId);
+
+      console.log('Payment ID:', paymentId);
+      console.log('Payment Status:', status);
+
+      if (
+        ![PaymentStatus.PENDING, PaymentStatus.APPROVED].includes(
+          status as PaymentStatus,
+        )
+      ) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send('Invalid payment status');
+      }
+
+      const order = await this.orderService.findByPaymentId(paymentId);
+
+      if (!order) {
+        return res.status(HttpStatus.NOT_FOUND).send('Order not found');
+      }
+
+      const orderStatus = this.orderService.mapPaymentStatusToOrderStatus(
+        status as PaymentStatus,
+      );
+
+      const paymentStatus = status as PaymentStatus;
+
+      const updateOrderInput: UpdateOrderInput = {
+        paymentStatus: paymentStatus,
+        orderStatus: orderStatus,
+      };
+
+      await this.orderService.updateOrder(order.id, updateOrderInput);
+
+      res.status(HttpStatus.OK).send('Payment status updated');
+    } catch (error) {
+      console.error('Error handling webhook:', error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send('Error processing webhook');
+    }
+  }
+
   @Post('create')
   async createPayment(
     @Body()
@@ -57,46 +117,6 @@ export class PaymentController {
       message: 'Pagamento criado com sucesso',
       payment,
     };
-  }
-
-  @Post('webhook')
-  async handlePaymentWebhook(@Req() req: Request, @Res() res: Response) {
-    const event = req.body;
-    console.log('Received in Controller:', event);
-    const { paymentId, status } = event;
-
-    console.log('Payment ID:', paymentId);
-    console.log('Status:', status);
-
-    if (![PaymentStatus.PENDING, PaymentStatus.APPROVED].includes(status)) {
-      console.log('Invalid payment status');
-      return res.status(HttpStatus.BAD_REQUEST).send('Invalid payment status');
-    }
-
-    const order = await this.orderService.findByPaymentId(paymentId);
-    console.log('Order:', order);
-
-    if (!order) {
-      console.log('Order not found');
-      return res.status(HttpStatus.NOT_FOUND).send('Order not found');
-    }
-
-    const orderStatus =
-      await this.orderService.mapPaymentStatusToOrderStatus(status);
-
-    console.log(orderStatus, 'Order Status');
-
-    const updateOrderInput: UpdateOrderInput = {
-      paymentStatus: status,
-      orderStatus: orderStatus,
-    };
-
-    console.log('Update Order Input:', updateOrderInput);
-
-    await this.orderService.updateOrder(order.id, updateOrderInput);
-
-    res.status(HttpStatus.OK).send('Payment status updated');
-    console.log('Payment status updated');
   }
 
   @Get('status')

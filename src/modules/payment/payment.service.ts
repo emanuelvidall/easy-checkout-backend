@@ -31,18 +31,6 @@ export class PaymentService {
       if (!productId) {
         throw new Error('Product ID is required');
       }
-      if (!phone) {
-        throw new Error('Phone (customerPhone) is required');
-      }
-
-      console.log('Received in Service:', {
-        name,
-        cpf,
-        email,
-        phone,
-        price,
-        productId,
-      });
 
       const createOrderInput: CreateOrderInput = {
         customerName: name,
@@ -85,10 +73,13 @@ export class PaymentService {
         },
       });
 
-      const { id: paymentId, point_of_interaction } = paymentResponse.data;
+      const { id: paymentIdRaw, point_of_interaction } = paymentResponse.data;
+
+      const paymentId = paymentIdRaw.toString();
 
       const updateOrderInput: UpdateOrderInput = {
         paymentId: paymentId,
+        paymentStatus: paymentResponse.data.status,
       };
 
       await this.orderService.updateOrder(order.id, updateOrderInput);

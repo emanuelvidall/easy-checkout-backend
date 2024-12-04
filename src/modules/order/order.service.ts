@@ -32,9 +32,8 @@ export class OrderService {
       include: { product: true },
     });
   }
-  async mapPaymentStatusToOrderStatus(
-    paymentStatus: PaymentStatus,
-  ): Promise<OrderStatus> {
+
+  mapPaymentStatusToOrderStatus(paymentStatus: PaymentStatus): OrderStatus {
     switch (paymentStatus) {
       case PaymentStatus.APPROVED:
         return OrderStatus.APPROVED;
